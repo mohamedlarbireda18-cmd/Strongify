@@ -1,0 +1,569 @@
+/* ============================================
+   NAVBAR - PREMIUM DESIGN SYSTEM
+   ============================================ */
+
+/* Variables spécifiques à la navbar */
+.navbar {
+  --nav-height: 80px;
+  --nav-height-scrolled: 72px;
+  --nav-transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Barre de navigation principale */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  background: rgba(24, 24, 27, 0.8);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 1000;
+  transition: all var(--nav-transition);
+}
+
+/* Mode clair */
+.light-mode .navbar {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* État scrollé */
+.navbar.scrolled {
+  height: var(--nav-height-scrolled);
+  background: rgba(24, 24, 27, 0.95);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 4px 24px rgba(0, 0, 0, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.light-mode .navbar.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 24px rgba(0, 0, 0, 0.04);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Conteneur */
+.navbar-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ============================================
+   LOGO
+   ============================================ */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fafafa;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+  text-decoration: none;
+}
+
+.light-mode .navbar-logo {
+  color: #0f172a;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.02);
+}
+
+.navbar-logo:active {
+  transform: scale(0.98);
+}
+
+/* Icône du logo */
+.navbar-logo-icon {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 4px 12px rgba(124, 58, 237, 0.3),
+    0 0 0 0 rgba(124, 58, 237, 0.5);
+  animation: logoGlow 3s ease-in-out infinite;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.navbar-logo-icon::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.navbar-logo:hover .navbar-logo-icon::after {
+  opacity: 0.3;
+}
+
+@keyframes logoGlow {
+  0%, 100% {
+    box-shadow: 
+      0 4px 12px rgba(124, 58, 237, 0.3),
+      0 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 4px 24px rgba(124, 58, 237, 0.5),
+      0 0 20px 4px rgba(124, 58, 237, 0.15);
+  }
+}
+
+/* Texte du logo */
+.navbar-logo-text {
+  background: linear-gradient(135deg, #fafafa, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.light-mode .navbar-logo-text {
+  background: linear-gradient(135deg, #0f172a, #334155);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   LIENS DE NAVIGATION
+   ============================================ */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  list-style: none;
+  background: rgba(24, 24, 27, 0.6);
+  padding: 0.375rem;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.light-mode .navbar-links {
+  background: rgba(241, 245, 249, 0.8);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+/* Lien individuel */
+.navbar-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #71717a;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.5rem 1.125rem;
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.light-mode .navbar-link {
+  color: #94a3b8;
+}
+
+.navbar-link:hover {
+  color: #fafafa;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.light-mode .navbar-link:hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Lien actif */
+.navbar-link.active {
+  color: #fafafa;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+.light-mode .navbar-link.active {
+  color: #0f172a;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Icône dans les liens (visible seulement sur mobile) */
+.nav-link-icon {
+  display: none;
+}
+
+/* ============================================
+   ACTIONS
+   ============================================ */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Toggle thème */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.light-mode .theme-toggle {
+  border-color: rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.theme-toggle:hover {
+  border-color: #7c3aed;
+  transform: rotate(15deg) scale(1.05);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+}
+
+.theme-toggle:active {
+  transform: rotate(15deg) scale(0.95);
+}
+
+/* Icônes du toggle */
+.theme-toggle-icon {
+  width: 18px;
+  height: 18px;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover .theme-toggle-icon {
+  color: #7c3aed;
+}
+
+/* Bouton CTA */
+.btn-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.375rem;
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  box-shadow: 
+    0 2px 8px rgba(124, 58, 237, 0.3),
+    0 0 0 0 rgba(124, 58, 237, 0.5);
+  letter-spacing: -0.01em;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Effet shine au hover */
+.btn-nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-nav:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 4px 16px rgba(124, 58, 237, 0.4),
+    0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+.btn-nav:hover::before {
+  left: 100%;
+}
+
+.btn-nav:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+
+/* Icône flèche */
+.btn-nav-arrow {
+  transition: transform 0.3s ease;
+}
+
+.btn-nav:hover .btn-nav-arrow {
+  transform: translateX(2px);
+}
+
+/* ============================================
+   BOUTON MENU MOBILE
+   ============================================ */
+.mobile-menu-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #fafafa;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
+.light-mode .mobile-menu-btn {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #0f172a;
+}
+
+.mobile-menu-btn:hover {
+  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.05);
+}
+
+/* Lignes du hamburger */
+.mobile-menu-line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-menu-btn.open .mobile-menu-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+  width: 22px;
+}
+
+.mobile-menu-btn.open .mobile-menu-line:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.mobile-menu-btn.open .mobile-menu-line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+  width: 22px;
+}
+
+/* ============================================
+   RESPONSIVE - TABLETTE
+   ============================================ */
+@media (max-width: 1024px) {
+  .navbar-links {
+    gap: 0.25rem;
+    padding: 0.3rem;
+  }
+  
+  .navbar-link {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.813rem;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 1rem;
+  }
+  
+  /* Cacher les liens en desktop */
+  .navbar-links {
+    display: none;
+  }
+  
+  /* Menu mobile ouvert */
+  .navbar-links.mobile-open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 88px;
+    left: 1rem;
+    right: 1rem;
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    padding: 0.75rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 
+      0 20px 50px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+    gap: 0.25rem;
+    z-index: 999;
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .light-mode .navbar-links.mobile-open {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(0, 0, 0, 0.06);
+    box-shadow: 
+      0 20px 50px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+  
+  /* Liens en mobile */
+  .navbar-links.mobile-open .navbar-link {
+    width: 100%;
+    text-align: left;
+    padding: 0.875rem 1rem;
+    border-radius: 14px;
+    font-size: 0.938rem;
+    font-weight: 500;
+    justify-content: flex-start;
+  }
+  
+  .navbar-links.mobile-open .navbar-link.active {
+    background: rgba(124, 58, 237, 0.1);
+    color: #a78bfa;
+    font-weight: 600;
+  }
+  
+  .light-mode .navbar-links.mobile-open .navbar-link.active {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7c3aed;
+  }
+  
+  /* Afficher les icônes en mobile */
+  .nav-link-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 1rem;
+  }
+  
+  /* Afficher le bouton hamburger */
+  .mobile-menu-btn {
+    display: flex;
+  }
+  
+  /* Cacher le CTA en mobile */
+  .navbar-actions .btn-nav {
+    display: none;
+  }
+  
+  /* Ajuster le logo */
+  .navbar-logo {
+    font-size: 1.2rem;
+    gap: 0.5rem;
+  }
+  
+  .navbar-logo-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Overlay pour le menu mobile */
+.navbar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 998;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.navbar-overlay.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* ============================================
+   PETIT MOBILE
+   ============================================ */
+@media (max-width: 380px) {
+  .navbar-logo-text {
+    font-size: 1.1rem;
+  }
+  
+  .navbar-logo-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .theme-toggle {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .mobile-menu-btn {
+    width: 36px;
+    height: 36px;
+  }
+}

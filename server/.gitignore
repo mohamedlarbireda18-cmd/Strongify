@@ -1,0 +1,20 @@
+# Créer/Mettre à jour .gitignore à la racine
+cat > .gitignore << 'EOF'
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+
+# Prisma
+server/prisma/*.db
+server/prisma/*.db-journal
+
+# IDE
+.vscode/
+.idea/
+
+# Build
+front/dist/
+server/dist/
+EOF

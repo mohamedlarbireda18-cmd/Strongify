@@ -1,0 +1,208 @@
+
+
+.how-it-works {
+  padding: 8rem 2rem;
+  background: #111113;
+}
+
+.light-mode .how-it-works {
+  background: #f8fafc;
+}
+
+/* Container des étapes */
+.steps-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-top: 2rem;
+}
+
+/* Ligne de progression */
+.steps-line {
+  position: absolute;
+  top: 62px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  z-index: 0;
+}
+
+.light-mode .steps-line {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Carte étape */
+.step-card {
+  flex: 1;
+  text-align: center;
+  padding: 0 1.5rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Numéro de l'étape */
+.step-number {
+  width: 80px;
+  height: 80px;
+  background: #1a1a1e;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 auto 2rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  z-index: 2;
+  color: #a1a1aa;
+}
+
+.light-mode .step-number {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #475569;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.step-card:hover .step-number {
+  border-color: #7c3aed;
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.3), 0 0 0 8px rgba(124, 58, 237, 0.05);
+  color: #7c3aed;
+  transform: scale(1.05);
+}
+
+/* Icône */
+.step-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* Titre */
+.step-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #fafafa;
+}
+
+.light-mode .step-title {
+  color: #0f172a;
+}
+
+/* Description */
+.step-description {
+  font-size: 0.938rem;
+  color: #a1a1aa;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.light-mode .step-description {
+  color: #475569;
+}
+
+/* Preview */
+.step-preview {
+  background: #1a1a1e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.light-mode .step-preview {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.step-card:hover .step-preview {
+  border-color: rgba(124, 58, 237, 0.2);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.1);
+}
+
+.step-preview-small {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.step-preview-item {
+  background: #111113;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fafafa;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.light-mode .step-preview-item {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.04);
+  color: #0f172a;
+}
+
+/* Table preview */
+.step-preview-table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.step-preview-table th {
+  font-size: 0.75rem;
+  color: #71717a;
+  padding-bottom: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.step-preview-table td {
+  font-size: 0.875rem;
+  padding: 0.375rem 0;
+  font-weight: 500;
+  color: #fafafa;
+}
+
+.light-mode .step-preview-table td {
+  color: #0f172a;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .how-it-works {
+    padding: 5rem 1rem;
+  }
+  
+  .steps-container {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .steps-line {
+    display: none;
+  }
+  
+  .step-card {
+    padding: 0 1rem 1rem;
+  }
+  
+  .step-number {
+    width: 64px;
+    height: 64px;
+    font-size: 1.25rem;
+  }
+}

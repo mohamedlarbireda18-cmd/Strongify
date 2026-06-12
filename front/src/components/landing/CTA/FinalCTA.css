@@ -1,0 +1,137 @@
+
+.final-cta {
+  padding: 8rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: #09090b;
+}
+
+.light-mode .final-cta {
+  background: #ffffff;
+}
+
+/* Glow en arrière-plan */
+.final-cta::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.15), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.light-mode .final-cta::before {
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.08), transparent 70%);
+}
+
+.final-cta-content {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.final-cta-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #fafafa;
+  letter-spacing: -0.02em;
+}
+
+.light-mode .final-cta-title {
+  color: #0f172a;
+}
+
+.final-cta-subtitle {
+  font-size: 1.125rem;
+  color: #a1a1aa;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.light-mode .final-cta-subtitle {
+  color: #475569;
+}
+
+.final-cta-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2.5rem;
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  font-size: 1.063rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4), 0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+.btn-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2.5rem;
+  background: transparent;
+  color: #fafafa;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  font-size: 1.063rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.light-mode .btn-cta-secondary {
+  color: #0f172a;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.btn-cta-secondary:hover {
+  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.05);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .final-cta {
+    padding: 5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .final-cta-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-cta-primary,
+  .btn-cta-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
