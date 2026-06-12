@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Toast } from '../components/ui/Toast';
 import { API_URL } from '../lib/api';
-import '../components/profile/Profile.css';
+import '../components/profile/profile.css';
 
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
