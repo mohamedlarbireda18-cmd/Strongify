@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -28,19 +28,19 @@ model User {
 }
 
 model Exercise {
-  id                   String                   @id @default(cuid())
-  name                 String
-  muscleGroup          String
-  type                 String
-  description          String?
-  videoUrl             String?
-  imageUrl             String?
-  createdAt            DateTime                 @default(now())
-  updatedAt            DateTime                 @updatedAt
-  programItems         ProgramItem[]
-  workoutExercises     WorkoutExercise[]
-  sessionExercises     WorkoutSessionExercise[]
-  records              ExerciseRecord[]
+  id               String                   @id @default(cuid())
+  name             String
+  muscleGroup      String
+  type             String
+  description      String?
+  videoUrl         String?
+  imageUrl         String?
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  programItems     ProgramItem[]
+  workoutExercises WorkoutExercise[]
+  sessionExercises WorkoutSessionExercise[]
+  records          ExerciseRecord[]
 }
 
 model Program {
@@ -80,8 +80,8 @@ model Workout {
   createdAt   DateTime          @default(now())
   exercises   WorkoutExercise[]
   sessions    WorkoutSession[]
-  name        String            @default("Untitled Workout")  
-  type        String            @default("CUSTOM")             
+  name        String            @default("Untitled Workout")
+  type        String            @default("CUSTOM")
 }
 
 model WorkoutExercise {
@@ -155,25 +155,25 @@ model WorkoutSession {
 }
 
 model WorkoutSessionExercise {
-  id          String              @id @default(cuid())
-  sessionId   String
-  session     WorkoutSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  exerciseId  String
-  exercise    Exercise            @relation(fields: [exerciseId], references: [id])
-  order       Int
-  notes       String?
-  sets        SessionSet[]
+  id         String              @id @default(cuid())
+  sessionId  String
+  session    WorkoutSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise            @relation(fields: [exerciseId], references: [id])
+  order      Int
+  notes      String?
+  sets       SessionSet[]
 }
 
 model SessionSet {
-  id                      String                  @id @default(cuid())
-  sessionExerciseId       String
-  sessionExercise         WorkoutSessionExercise  @relation(fields: [sessionExerciseId], references: [id], onDelete: Cascade)
-  setNumber               Int
-  weight                  Float
-  reps                    Int
-  isDropSet               Boolean                 @default(false)
-  isMicroReps             Boolean                 @default(false)
-  rpe                     Int?
-  notes                   String?
+  id                String                  @id @default(cuid())
+  sessionExerciseId String
+  sessionExercise   WorkoutSessionExercise  @relation(fields: [sessionExerciseId], references: [id], onDelete: Cascade)
+  setNumber         Int
+  weight            Float
+  reps              Int
+  isDropSet         Boolean                 @default(false)
+  isMicroReps       Boolean                 @default(false)
+  rpe               Int?
+  notes             String?
 }
