@@ -1,4 +1,7 @@
+/// <reference types="node" />
+
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 const muscleColors: Record<string, string> = {
@@ -13,8 +16,6 @@ const muscleColors: Record<string, string> = {
   Calves: '#6366f1',
   Abs: '#84cc16',
   Forearms: '#d946ef',
-  Traps: '#f43f5e',
-  Lats: '#0ea5e9',
 };
 
 const muscleIcons: Record<string, string> = {
@@ -29,14 +30,12 @@ const muscleIcons: Record<string, string> = {
   Calves: '🦶',
   Abs: '🧎',
   Forearms: '🤙',
-  Traps: '🤷',
-  Lats: '🦅',
 };
 
 function generateExerciseImage(name: string, muscleGroup: string): string {
   const color = muscleColors[muscleGroup] || '#7c3aed';
   const icon = muscleIcons[muscleGroup] || '🏋️';
-  
+
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
   <rect width="400" height="400" rx="20" fill="${color}" opacity="0.15"/>
   <rect width="400" height="400" rx="20" fill="none" stroke="${color}" stroke-width="2" opacity="0.3"/>
@@ -44,12 +43,11 @@ function generateExerciseImage(name: string, muscleGroup: string): string {
   <text x="200" y="240" text-anchor="middle" font-size="16" font-family="Inter, sans-serif" fill="${color}" font-weight="600">${name}</text>
   <text x="200" y="265" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="${color}" opacity="0.6">${muscleGroup}</text>
 </svg>`;
-  
+
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 }
 
 const exercises = [
-  // ========== 50 EXERCICES EXISTANTS ==========
   { name: "Seated Cable Row", muscleGroup: "Back", type: "BILATERAL" },
   { name: "Lat Pulldown", muscleGroup: "Back", type: "BILATERAL" },
   { name: "Pec Deck Fly", muscleGroup: "Chest", type: "BILATERAL" },
@@ -100,9 +98,6 @@ const exercises = [
   { name: "T-Bar Row", muscleGroup: "Back", type: "BILATERAL" },
   { name: "Single Arm Cable Row", muscleGroup: "Back", type: "UNILATERAL" },
   { name: "Single Arm Pulldown", muscleGroup: "Back", type: "UNILATERAL" },
-
-  // ========== 100 NOUVEAUX EXERCICES ==========
-  // Chest (12)
   { name: "Flat DB Press", muscleGroup: "Chest", type: "BILATERAL" },
   { name: "Incline Cable Fly", muscleGroup: "Chest", type: "BILATERAL" },
   { name: "Decline Cable Fly", muscleGroup: "Chest", type: "BILATERAL" },
@@ -115,8 +110,6 @@ const exercises = [
   { name: "High Cable Fly", muscleGroup: "Chest", type: "BILATERAL" },
   { name: "Single Arm Cable Press", muscleGroup: "Chest", type: "UNILATERAL" },
   { name: "Svend Press", muscleGroup: "Chest", type: "BILATERAL" },
-
-  // Back (16)
   { name: "Meadows Row", muscleGroup: "Back", type: "UNILATERAL" },
   { name: "Single Arm DB Row", muscleGroup: "Back", type: "UNILATERAL" },
   { name: "Inverted Row", muscleGroup: "Back", type: "BILATERAL" },
@@ -133,8 +126,6 @@ const exercises = [
   { name: "Dumbbell Pullover", muscleGroup: "Back", type: "BILATERAL" },
   { name: "Barbell Pullover", muscleGroup: "Back", type: "BILATERAL" },
   { name: "Landmine Row", muscleGroup: "Back", type: "BILATERAL" },
-
-  // Shoulders (14)
   { name: "Seated DB Press", muscleGroup: "Shoulders", type: "BILATERAL" },
   { name: "Standing Military Press", muscleGroup: "Shoulders", type: "BILATERAL" },
   { name: "Push Press", muscleGroup: "Shoulders", type: "BILATERAL" },
@@ -149,8 +140,6 @@ const exercises = [
   { name: "Behind Neck Press", muscleGroup: "Shoulders", type: "BILATERAL" },
   { name: "Plate Front Raise", muscleGroup: "Shoulders", type: "BILATERAL" },
   { name: "Y Raise", muscleGroup: "Shoulders", type: "BILATERAL" },
-
-  // Biceps (10)
   { name: "Incline DB Curl", muscleGroup: "Biceps", type: "BILATERAL" },
   { name: "Spider Curl", muscleGroup: "Biceps", type: "BILATERAL" },
   { name: "Drag Curl", muscleGroup: "Biceps", type: "BILATERAL" },
@@ -161,8 +150,6 @@ const exercises = [
   { name: "Chin Up Curl", muscleGroup: "Biceps", type: "BILATERAL" },
   { name: "21s Curl", muscleGroup: "Biceps", type: "BILATERAL" },
   { name: "Waiter Curl", muscleGroup: "Biceps", type: "BILATERAL" },
-
-  // Triceps (10)
   { name: "Overhead DB Extension", muscleGroup: "Triceps", type: "BILATERAL" },
   { name: "Single Arm Pushdown", muscleGroup: "Triceps", type: "UNILATERAL" },
   { name: "Tate Press", muscleGroup: "Triceps", type: "BILATERAL" },
@@ -173,8 +160,6 @@ const exercises = [
   { name: "Reverse Pushdown", muscleGroup: "Triceps", type: "BILATERAL" },
   { name: "Cross Cable Extension", muscleGroup: "Triceps", type: "BILATERAL" },
   { name: "Kickback", muscleGroup: "Triceps", type: "BILATERAL" },
-
-  // Quadriceps (8)
   { name: "Front Squat", muscleGroup: "Quadriceps", type: "BILATERAL" },
   { name: "Goblet Squat", muscleGroup: "Quadriceps", type: "BILATERAL" },
   { name: "Sissy Squat", muscleGroup: "Quadriceps", type: "BILATERAL" },
@@ -183,30 +168,22 @@ const exercises = [
   { name: "Pistol Squat", muscleGroup: "Quadriceps", type: "UNILATERAL" },
   { name: "Reverse Lunge", muscleGroup: "Quadriceps", type: "BILATERAL" },
   { name: "Walking Lunge", muscleGroup: "Quadriceps", type: "BILATERAL" },
-
-  // Hamstrings (6)
   { name: "Stiff Leg Deadlift", muscleGroup: "Hamstrings", type: "BILATERAL" },
   { name: "Nordic Curl", muscleGroup: "Hamstrings", type: "BILATERAL" },
   { name: "Single Leg Curl", muscleGroup: "Hamstrings", type: "UNILATERAL" },
   { name: "Seated Leg Curl", muscleGroup: "Hamstrings", type: "BILATERAL" },
   { name: "Kettlebell Swing", muscleGroup: "Hamstrings", type: "BILATERAL" },
   { name: "Hip Hinge", muscleGroup: "Hamstrings", type: "BILATERAL" },
-
-  // Glutes (6)
   { name: "Cable Kickback", muscleGroup: "Glutes", type: "UNILATERAL" },
   { name: "Abductor Machine", muscleGroup: "Glutes", type: "BILATERAL" },
   { name: "Frog Pump", muscleGroup: "Glutes", type: "BILATERAL" },
   { name: "Single Leg Bridge", muscleGroup: "Glutes", type: "UNILATERAL" },
   { name: "Donkey Kick", muscleGroup: "Glutes", type: "UNILATERAL" },
   { name: "Fire Hydrant", muscleGroup: "Glutes", type: "UNILATERAL" },
-
-  // Calves (4)
   { name: "Seated Calf Raise", muscleGroup: "Calves", type: "BILATERAL" },
   { name: "Donkey Calf Raise", muscleGroup: "Calves", type: "BILATERAL" },
   { name: "Single Leg Calf Raise", muscleGroup: "Calves", type: "UNILATERAL" },
   { name: "Tibia Raise", muscleGroup: "Calves", type: "BILATERAL" },
-
-  // Abs (10)
   { name: "Hanging Leg Raise", muscleGroup: "Abs", type: "BILATERAL" },
   { name: "Cable Crunch", muscleGroup: "Abs", type: "BILATERAL" },
   { name: "Ab Wheel Rollout", muscleGroup: "Abs", type: "BILATERAL" },
@@ -217,8 +194,6 @@ const exercises = [
   { name: "Dragon Flag", muscleGroup: "Abs", type: "BILATERAL" },
   { name: "Toes to Bar", muscleGroup: "Abs", type: "BILATERAL" },
   { name: "Pallof Press", muscleGroup: "Abs", type: "BILATERAL" },
-
-  // Forearms (4)
   { name: "Wrist Curl", muscleGroup: "Forearms", type: "BILATERAL" },
   { name: "Reverse Wrist Curl", muscleGroup: "Forearms", type: "BILATERAL" },
   { name: "Farmer Walk", muscleGroup: "Forearms", type: "BILATERAL" },
@@ -227,8 +202,7 @@ const exercises = [
 
 async function main() {
   console.log('🌱 Seeding exercises with images...');
-  
-  // Supprimer d'abord les données qui référencent les exercices
+
   console.log('  🗑️  Deleting dependent data...');
   await prisma.sessionSet.deleteMany();
   await prisma.workoutSessionExercise.deleteMany();
@@ -237,19 +211,17 @@ async function main() {
   await prisma.workoutExercise.deleteMany();
   await prisma.programItem.deleteMany();
   await prisma.exerciseRecord.deleteMany();
-  
-  // Maintenant on peut supprimer les exercices
+
   await prisma.exercise.deleteMany();
   console.log('  🗑️  Old exercises deleted');
-  
-  // Réinsérer les exercices
+
   for (const exercise of exercises) {
     const imageUrl = generateExerciseImage(exercise.name, exercise.muscleGroup);
     await prisma.exercise.create({
       data: { ...exercise, imageUrl }
     });
   }
-  
+
   console.log(`✨ ${exercises.length} exercises seeded with images!`);
 }
 
