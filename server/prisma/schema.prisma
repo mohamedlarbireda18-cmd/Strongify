@@ -25,6 +25,8 @@ model User {
   weightLogs          WeightLog[]
   customExercises     CustomExercise[]
   workoutSessions     WorkoutSession[]
+  calorieLogs         CalorieLog[]
+  userGoals           UserGoals?
 }
 
 model Exercise {
@@ -176,4 +178,24 @@ model SessionSet {
   isMicroReps       Boolean                 @default(false)
   rpe               Int?
   notes             String?
+}
+
+model CalorieLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calories  Int
+  date      DateTime @default(now())
+}
+
+model UserGoals {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal      String   @default("MAINTAIN")
+  activity  String   @default("MODERATE")
+  height    Float?
+  age       Int?
+  gender    String?
+  targetWeight Float?   // ← AJOUTER
 }
