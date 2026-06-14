@@ -112,6 +112,7 @@ export const useBody = () => {
 
   // Calculs
   const todayCalories = calorieLogs.reduce((sum, log) => sum + log.calories, 0);
+  const maintenance = bmrResult?.maintenance || 0;
   const targetCalories = bmrResult
     ? userGoals?.goal === 'CUT' ? bmrResult.cutting
     : userGoals?.goal === 'BULK' ? bmrResult.bulking
@@ -120,6 +121,8 @@ export const useBody = () => {
     : 0;
   const remaining = targetCalories - todayCalories;
   const deficitSurplus = todayCalories - targetCalories;
+  const deficitFromTDEE = maintenance - todayCalories;
+  const surplusFromTDEE = todayCalories - maintenance;
 
   // Weekly projection based on actual deficit/surplus
   const weeklyProjection = bmrResult ? ((deficitSurplus * 7) / 7700).toFixed(2) : '0.00';
@@ -176,6 +179,7 @@ export const useBody = () => {
     addWeight, addCalories, saveGoals,
     todayCalories, targetCalories, remaining, deficitSurplus, weeklyProjection,
     activityLabels, goalLabels,
-    targetWeight, weightProgress, goalTimeline, planGoalTimeline
+    targetWeight, weightProgress, goalTimeline, planGoalTimeline,
+    maintenance, deficitFromTDEE, surplusFromTDEE
   };
 };

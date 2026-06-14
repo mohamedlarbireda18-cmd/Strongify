@@ -43,6 +43,7 @@ export const useWorkoutDetail = (workoutId: string) => {
 
   const token = localStorage.getItem('token');
 
+  // Fetch workout une seule fois au montage ou si workoutId change
   useEffect(() => {
     const fetchWorkout = async () => {
       setIsLoading(true);
@@ -61,8 +62,9 @@ export const useWorkoutDetail = (workoutId: string) => {
     };
 
     if (workoutId) fetchWorkout();
-  }, [workoutId, token]);
+  }, [workoutId]); // retirer token pour éviter re-fetch inutile
 
+  // Fetch progress quand progressSessions change
   useEffect(() => {
     const fetchProgress = async () => {
       try {
@@ -79,7 +81,7 @@ export const useWorkoutDetail = (workoutId: string) => {
     };
 
     if (workoutId) fetchProgress();
-  }, [workoutId, progressSessions, token]);
+  }, [workoutId, progressSessions]); // retirer token
 
   return { workout, progress, progressSessions, setProgressSessions, isLoading, error };
 };

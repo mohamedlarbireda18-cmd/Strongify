@@ -13,9 +13,10 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
   const {
     weightLogs, currentWeight, bmrResult, userGoals, isLoading,
     addWeight, addCalories,
-    todayCalories, targetCalories, remaining, deficitSurplus, weeklyProjection,
+    todayCalories, targetCalories, remaining, weeklyProjection,
     goalLabels, activityLabels,
-    targetWeight, weightProgress, goalTimeline, planGoalTimeline
+    targetWeight, weightProgress, goalTimeline, planGoalTimeline,
+    maintenance, deficitFromTDEE, surplusFromTDEE
   } = body;
 
   const [showWeightModal, setShowWeightModal] = useState(false);
@@ -48,69 +49,101 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
     if (currentWeight) animate(setAnimWeight, 0, Math.round(currentWeight));
   }, [bmrResult, targetCalories, todayCalories, currentWeight]);
 
-  const tdee = animTDEE || bmrResult?.maintenance || 0;
-  const isSurplus = deficitSurplus > 0;
+  const tdee = animTDEE || maintenance || 0;
   const progressPercent = targetCalories > 0 ? Math.min((todayCalories / targetCalories) * 100, 100) : 0;
   const ringCircumference = 283;
   const ringOffset = ringCircumference - (progressPercent / 100) * ringCircumference;
 
-  // Couleur du cercle selon le dépassement et l'objectif
-  let circleColor = '#7c3aed';
-  if (todayCalories > targetCalories) {
-    if (userGoals?.goal === 'CUT') {
-      circleColor = '#ef4444'; // rouge si surplus en cut
-    } else {
-      // Bulk / Lean Bulk : couleur selon l'ampleur du surplus
-      const surplus = deficitSurplus;
-      if (surplus <= 500) circleColor = '#22c55e';
-      else if (surplus <= 1000) circleColor = '#f59e0b';
-      else circleColor = '#ef4444';
-    }
-  }
-
-  // Message et couleur pour le déficit/surplus
   const isCut = userGoals?.goal === 'CUT';
   const isBulk = userGoals?.goal === 'BULK' || userGoals?.goal === 'LEAN_BULK';
+  const isMaintain = userGoals?.goal === 'MAINTAIN';
+
+  // === COULEUR DU CERCLE ===
+  let circleColor = '#7c3aed'; // défaut violet
+  if (isCut) {
+    const def = deficitFromTDEE;
+    if (def > 700) circleColor = '#22c55e';       // bon déficit → vert
+    else if (def >= 300) circleColor = '#22c55e';  // bon déficit → vert
+    else if (def > 0) circleColor = '#f59e0b';     // petit déficit → orange
+    else circleColor = '#ef4444';                   // surplus → rouge
+  } else if (isBulk) {
+    const sur = surplusFromTDEE;
+    if (sur >= 250 && sur <= 500) circleColor = '#22c55e';  // optimal → vert
+    else if (sur > 0 && sur < 250) circleColor = '#f59e0b'; // petit → orange
+    else if (sur > 500 && sur <= 1000) circleColor = '#f59e0b'; // élevé → orange
+    else if (sur > 1000) circleColor = '#ef4444';   // excessif → rouge
+    else circleColor = '#ef4444';                     // déficit → rouge
+  } else if (isMaintain) {
+    const diff = surplusFromTDEE;
+    if (Math.abs(diff) <= 100) circleColor = '#22c55e';  // parfait → vert
+    else circleColor = '#f59e0b';                         // écart → orange
+  }
+
+  // === MESSAGE DÉFICIT/SURPLUS ===
   let deficitColor = '#22c55e';
   let deficitLabel = '';
   let deficitTooltip = '';
 
-  const absValue = isCut ? targetCalories - todayCalories : todayCalories - targetCalories;
   if (isCut) {
-    if (absValue <= 500) {
+    const def = deficitFromTDEE;
+    if (def > 700) {
+      deficitColor = '#ef4444';
+      deficitLabel = `Deficit Today ${def} kcal`;
+      deficitTooltip = '⚠️ Too few calories! Risk of muscle loss, metabolic slowdown, and nutritional deficiencies. Increase your intake.';
+    } else if (def >= 300) {
       deficitColor = '#22c55e';
-      deficitLabel = `Deficit Today ${absValue} kcal`;
-      deficitTooltip = 'Healthy deficit. Promotes steady fat loss without muscle loss.';
-    } else if (absValue <= 1000) {
+      deficitLabel = `Deficit Today ${def} kcal`;
+      deficitTooltip = '✅ Good deficit. Promotes steady fat loss while preserving muscle.';
+    } else if (def > 0) {
       deficitColor = '#f59e0b';
-      deficitLabel = `Deficit Today ${absValue} kcal`;
-      deficitTooltip = 'Moderate deficit. May cause fatigue and muscle loss if prolonged.';
+      deficitLabel = `Deficit Today ${def} kcal`;
+      deficitTooltip = '⚠️ Small deficit. Slower progress but still in the right direction.';
     } else {
       deficitColor = '#ef4444';
-      deficitLabel = `Deficit Today ${absValue} kcal`;
-      deficitTooltip = 'Severe deficit! Risk of muscle loss, metabolic slowdown, and nutritional deficiencies.';
+      deficitLabel = `Surplus Today ${surplusFromTDEE} kcal`;
+      deficitTooltip = '❌ You are eating above maintenance! This will prevent fat loss.';
     }
   } else if (isBulk) {
-    if (absValue <= 500) {
+    const sur = surplusFromTDEE;
+    if (sur >= 250 && sur <= 500) {
       deficitColor = '#22c55e';
-      deficitLabel = `Surplus Today ${absValue} kcal`;
-      deficitTooltip = 'Optimal surplus for muscle gain with minimal fat.';
-    } else if (absValue <= 1000) {
+      deficitLabel = `Surplus Today ${sur} kcal`;
+      deficitTooltip = '✅ Optimal surplus for muscle gain with minimal fat.';
+    } else if (sur > 0 && sur < 250) {
       deficitColor = '#f59e0b';
-      deficitLabel = `Surplus Today ${absValue} kcal`;
-      deficitTooltip = 'Higher surplus. May lead to more fat gain.';
+      deficitLabel = `Surplus Today ${sur} kcal`;
+      deficitTooltip = '⚠️ Small surplus. Muscle growth may be slower.';
+    } else if (sur > 500 && sur <= 1000) {
+      deficitColor = '#f59e0b';
+      deficitLabel = `Surplus Today ${sur} kcal`;
+      deficitTooltip = '⚠️ Higher surplus. May lead to more fat gain.';
+    } else if (sur > 1000) {
+      deficitColor = '#ef4444';
+      deficitLabel = `Surplus Today ${sur} kcal`;
+      deficitTooltip = '❌ Excessive surplus! High risk of unnecessary fat gain and health issues.';
     } else {
       deficitColor = '#ef4444';
-      deficitLabel = `Surplus Today ${absValue} kcal`;
-      deficitTooltip = 'Excessive surplus! High risk of unnecessary fat gain and health issues.';
+      deficitLabel = `Deficit Today ${-sur} kcal`;
+      deficitTooltip = '❌ You are eating below maintenance! This will limit muscle growth.';
+    }
+  } else if (isMaintain) {
+    const diff = surplusFromTDEE;
+    if (Math.abs(diff) <= 100) {
+      deficitColor = '#22c55e';
+      deficitLabel = `Balance ±${Math.abs(diff)} kcal`;
+      deficitTooltip = '✅ Perfect! You are eating at maintenance.';
+    } else {
+      deficitColor = '#f59e0b';
+      deficitLabel = diff > 0 ? `Surplus ${diff} kcal` : `Deficit ${-diff} kcal`;
+      deficitTooltip = '⚠️ Try to stay closer to maintenance to keep your weight stable.';
     }
   }
 
   const goalMessages: Record<string, string> = {
-    CUT: 'To lose body fat, maintain a consistent deficit. Pair with high protein intake and strength training.',
+    CUT: 'To lose body fat, maintain a consistent deficit of 300-700 kcal. Pair with high protein intake and strength training.',
     MAINTAIN: 'To keep your current weight, eat at maintenance. Focus on nutrient-dense foods and consistent training.',
-    LEAN_BULK: 'To build muscle with minimal fat gain, aim for a small surplus. Prioritize protein and progressive overload.',
-    BULK: 'To gain weight and strength faster, maintain a consistent surplus. Combine with high-volume training.'
+    LEAN_BULK: 'To build muscle with minimal fat gain, aim for a surplus of 250-500 kcal. Prioritize protein and progressive overload.',
+    BULK: 'To gain weight and strength faster, maintain a surplus of 250-500 kcal. Combine with high-volume training.'
   };
 
   const handleResetPlan = async () => {
@@ -146,7 +179,6 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
         <button onClick={onEditPlan} className="edit-plan-btn">⚙️ Edit Plan</button>
       </div>
 
-      {/* Overview Cards */}
       <div className="body-cards">
         <div className="body-card body-card-full pulse-glow">
           <span className="body-card-icon">⚖️</span>
@@ -175,7 +207,6 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
         </div>
       </div>
 
-      {/* Weight Goal */}
       {targetWeight && currentWeight && (
         <div className="goal-card" style={{ marginBottom: '1rem' }}>
           <h3 className="section-title" style={{ marginTop: 0 }}>Weight Goal</h3>
@@ -198,11 +229,9 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
         </div>
       )}
 
-      {/* Weight Chart */}
       <WeightChart data={weightLogs} />
       <button className="body-btn" style={{ width: '100%', marginBottom: '1rem' }} onClick={() => setShowWeightModal(true)}>+ Add Weight</button>
 
-      {/* Daily Calories */}
       <div className="nutrition-section">
         <h3 className="section-title" style={{ marginTop: 0 }}>Daily Calories</h3>
         <div className="calorie-ring">
@@ -230,32 +259,41 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
             setCalorieInput('');
             setToast({ message: 'Calories logged!', icon: '🍽️', type: 'success' });
           }}>Add</button>
-        </div><p style={{ fontSize: '0.625rem', color: '#52525b', textAlign: 'center', marginTop: '0.5rem' }}>
-  Resets at midnight
-</p>
+        </div>
+        <p style={{ fontSize: '0.625rem', color: '#52525b', textAlign: 'center', marginTop: '0.5rem' }}>Resets at midnight</p>
       </div>
- 
-      {/* Deficit / Surplus with color coding and tooltip */}
+
       <div className="deficit-card" style={{ borderColor: deficitColor, color: deficitColor, background: `${deficitColor}15` }}>
-        {deficitLabel || (isSurplus ? `Surplus Today ${deficitSurplus} kcal` : `Deficit Today ${-deficitSurplus} kcal`)}
+        {deficitLabel}
         <InfoTooltip title="Info" content={deficitTooltip} />
       </div>
 
-      {/* Disclaimer for excessive deficit/surplus */}
-      {Math.abs(deficitSurplus) > 1000 && (
-        <div className={`disclaimer-card ${isSurplus ? 'surplus' : 'deficit'}`}>
-          {isSurplus
-            ? '⚠️ High surplus! This may lead to excessive fat gain and health risks.'
-            : '⚠️ High deficit! Risk of muscle loss, metabolic slowdown, and nutritional deficiencies.'}
+      {isCut && deficitFromTDEE > 700 && (
+        <div className="disclaimer-card deficit">
+          ⚠️ Severe deficit! Risk of muscle loss, metabolic slowdown, and nutritional deficiencies. Increase your intake.
+        </div>
+      )}
+      {isCut && deficitFromTDEE < 0 && (
+        <div className="disclaimer-card surplus">
+          ⚠️ You are eating above maintenance! This will prevent fat loss.
+        </div>
+      )}
+      {isBulk && surplusFromTDEE > 1000 && (
+        <div className="disclaimer-card surplus">
+          ⚠️ Excessive surplus! High risk of unnecessary fat gain and health issues.
+        </div>
+      )}
+      {isBulk && surplusFromTDEE < 0 && (
+        <div className="disclaimer-card deficit">
+          ⚠️ You are eating below maintenance! This will limit muscle growth.
         </div>
       )}
 
-      {/* Goal & Recommendations */}
       <div className="goal-card">
         <h3 className="section-title" style={{ marginTop: 0 }}>Current Goal</h3>
         <div className="goal-card-row"><span>Goal</span><span>{userGoals ? goalLabels[userGoals.goal] : '--'}</span></div>
         <div className="goal-card-row"><span>Activity</span><span>{userGoals ? activityLabels[userGoals.activity] : '--'}</span></div>
-        <div className="goal-card-row"><span>Maintenance</span><span>{tdee || bmrResult?.maintenance || 0} kcal</span></div>
+        <div className="goal-card-row"><span>Maintenance</span><span>{tdee || maintenance || 0} kcal</span></div>
         <div className="goal-card-row"><span>Target</span><span>{targetCalories || 0} kcal</span></div>
         <div className="goal-card-row"><span>Estimated</span><span>{weeklyProjection} kg/week</span></div>
         <p style={{ fontSize: '0.813rem', color: '#a78bfa', marginTop: '0.75rem', lineHeight: 1.5 }}>
@@ -264,7 +302,6 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
         <button className="btn-reset-plan" onClick={() => setShowResetModal(true)}>🗑️ Reset Plan</button>
       </div>
 
-      {/* Weight History */}
       <h3 className="section-title">Weight History</h3>
       {weightLogs.slice().reverse().slice(0, 10).map((log: any) => (
         <div key={log.id} className="weight-history-item">
@@ -273,7 +310,6 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
         </div>
       ))}
 
-      {/* Weight Modal */}
       {showWeightModal && (
         <div className="modal-overlay" onClick={() => setShowWeightModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -291,7 +327,6 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
         </div>
       )}
 
-      {/* Reset Plan Modal */}
       {showResetModal && (
         <div className="modal-overlay" onClick={() => setShowResetModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>

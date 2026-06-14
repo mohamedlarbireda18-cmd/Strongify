@@ -72,7 +72,6 @@ export const WorkoutDetail: React.FC = () => {
       </div>
     );
 
-  // Dernières N sessions (ordre chronologique ascendant déjà)
   const recentSessions = workout.sessions.slice(-progressSessions);
   const volumeData = recentSessions.map((s) => s.totalVolume);
   const sessionLabels = recentSessions.map((_, i) => `S${i + 1}`);
@@ -100,28 +99,16 @@ export const WorkoutDetail: React.FC = () => {
     maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-      x: {
-        ticks: { color: '#a1a1aa' },
-        grid: { color: 'rgba(255,255,255,0.08)' },
-      },
-      y: {
-        ticks: { color: '#a1a1aa' },
-        grid: { color: 'rgba(255,255,255,0.08)' },
-      },
+      x: { ticks: { color: '#a1a1aa' }, grid: { color: 'rgba(255,255,255,0.08)' } },
+      y: { ticks: { color: '#a1a1aa' }, grid: { color: 'rgba(255,255,255,0.08)' } },
     },
   };
 
-  // Sessions récentes en premier (plus récente en haut)
   const reversedSessions = [...workout.sessions].reverse();
-  const displayedSessions = expanded
-    ? reversedSessions
-    : reversedSessions.slice(0, INITIAL_VISIBLE_SESSIONS);
+  const displayedSessions = expanded ? reversedSessions : reversedSessions.slice(0, INITIAL_VISIBLE_SESSIONS);
   const hasMoreSessions = reversedSessions.length > INITIAL_VISIBLE_SESSIONS;
 
-  // Données pour le modal
-  const exerciseData = selectedExercise
-    ? progress.find((p) => p.name === selectedExercise)
-    : null;
+  const exerciseData = selectedExercise ? progress.find((p) => p.name === selectedExercise) : null;
 
   const exerciseChartData = exerciseData
     ? {
@@ -153,10 +140,7 @@ export const WorkoutDetail: React.FC = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: 'bottom' as const,
-        labels: { color: '#a1a1aa', padding: 16, usePointStyle: true },
-      },
+      legend: { position: 'bottom' as const, labels: { color: '#a1a1aa', padding: 16, usePointStyle: true } },
       tooltip: {
         backgroundColor: '#1a1a1e',
         titleColor: '#fafafa',
@@ -168,10 +152,7 @@ export const WorkoutDetail: React.FC = () => {
       },
     },
     scales: {
-      x: {
-        grid: { color: 'rgba(255,255,255,0.08)' },
-        ticks: { color: '#71717a', font: { size: 10 } },
-      },
+      x: { grid: { color: 'rgba(255,255,255,0.08)' }, ticks: { color: '#71717a', font: { size: 10 } } },
       y: {
         type: 'linear' as const,
         position: 'left' as const,
@@ -199,57 +180,34 @@ export const WorkoutDetail: React.FC = () => {
       </button>
 
       <h1 className="workout-detail-name">{workout.name}</h1>
-      <span className={`workout-detail-type type-${workout.type}`}>
-        {workout.type.replace('_', ' ')}
-      </span>
+      <span className={`workout-detail-type type-${workout.type}`}>{workout.type.replace('_', ' ')}</span>
 
-      {/* Graphique principal avec toggle */}
       {volumeData.length > 0 && (
         <div className="chart-container" style={{ margin: '1.5rem 0' }}>
           <div className="chart-header">
             <h3 className="chart-title">Total Volume Progression</h3>
             <div className="chart-toggle">
-              <button
-                className={`toggle-btn ${chartType === 'bar' ? 'active' : ''}`}
-                onClick={() => setChartType('bar')}
-              >
-                ▊
-              </button>
-              <button
-                className={`toggle-btn ${chartType === 'line' ? 'active' : ''}`}
-                onClick={() => setChartType('line')}
-              >
-                ∿
-              </button>
+              <button className={`toggle-btn ${chartType === 'bar' ? 'active' : ''}`} onClick={() => setChartType('bar')}>▊</button>
+              <button className={`toggle-btn ${chartType === 'line' ? 'active' : ''}`} onClick={() => setChartType('line')}>∿</button>
             </div>
           </div>
           <div style={{ height: '220px' }} key={chartType}>
-            {chartType === 'bar' ? (
-              <Bar data={mainChartData} options={mainChartOptions} />
-            ) : (
-              <Line data={mainChartData} options={mainChartOptions} />
-            )}
+            {chartType === 'bar' ? <Bar data={mainChartData} options={mainChartOptions} /> : <Line data={mainChartData} options={mainChartOptions} />}
           </div>
         </div>
       )}
 
-      {/* Sélecteur de période */}
       <div className="workout-detail-section">
         <h3>Progress period</h3>
         <div className="period-selector">
           {SESSION_OPTIONS.map((num) => (
-            <button
-              key={num}
-              className={`period-btn ${progressSessions === num ? 'active' : ''}`}
-              onClick={() => setProgressSessions(num)}
-            >
+            <button key={num} className={`period-btn ${progressSessions === num ? 'active' : ''}`} onClick={() => setProgressSessions(num)}>
               {num} sessions
             </button>
           ))}
         </div>
       </div>
 
-      {/* Exercices avec mini charts */}
       <div className="workout-detail-section">
         <h3>Exercises</h3>
         {workout.exercises.map((ex) => {
@@ -260,15 +218,17 @@ export const WorkoutDetail: React.FC = () => {
             <div
               key={ex.exerciseId}
               className="detail-exercise-item"
-              onClick={() => hasData && setSelectedExercise(ex.exercise.name)}
+              onClick={(e) => {
+                if (hasData) {
+                  e.stopPropagation();
+                  setSelectedExercise(ex.exercise.name);
+                }
+              }}
               style={{ cursor: hasData ? 'pointer' : 'default' }}
             >
               <div className="exercise-info">
                 <span className="exercise-name">{ex.exercise.name}</span>
-                <span
-                  className="exercise-muscle"
-                  style={{ color: muscleColor, background: `${muscleColor}20` }}
-                >
+                <span className="exercise-muscle" style={{ color: muscleColor, background: `${muscleColor}20` }}>
                   {ex.exercise.muscleGroup}
                 </span>
               </div>
@@ -281,10 +241,7 @@ export const WorkoutDetail: React.FC = () => {
                       <div
                         key={i}
                         className="mini-bar"
-                        style={{
-                          height: `${heightPercent}%`,
-                          width: `${100 / exProgress.data.length - 4}%`,
-                        }}
+                        style={{ height: `${heightPercent}%`, width: `${100 / exProgress.data.length - 4}%` }}
                       />
                     );
                   })}
@@ -295,46 +252,36 @@ export const WorkoutDetail: React.FC = () => {
         })}
       </div>
 
-      {/* Historique des sessions (plus récentes en premier) avec View More */}
       <div className="workout-detail-section">
         <h3>Sessions ({workout.sessions.length})</h3>
         {displayedSessions.map((s) => (
-          <div
-            key={s.id}
-            className="detail-session-item"
-            onClick={() => navigate(`/my-workouts/${id}/session/${s.id}`)}
-          >
+          <div key={s.id} className="detail-session-item" onClick={() => navigate(`/my-workouts/${id}/session/${s.id}`)}>
             <span>{new Date(s.date).toLocaleDateString()}</span>
             <span className="detail-session-volume">{s.totalVolume} kg</span>
           </div>
         ))}
         {hasMoreSessions && (
-          <button
-            className="view-more-btn"
-            onClick={() => setExpanded(!expanded)}
-          >
-            {expanded
-              ? 'Show Less'
-              : `View More (${reversedSessions.length - INITIAL_VISIBLE_SESSIONS} remaining)`}
+          <button className="view-more-btn" onClick={() => setExpanded(!expanded)}>
+            {expanded ? 'Show Less' : `View More (${reversedSessions.length - INITIAL_VISIBLE_SESSIONS} remaining)`}
           </button>
         )}
       </div>
 
-      <button
-        className="start-session-btn"
-        onClick={() => navigate(`/my-workouts/${id}/session`)}
-      >
+      <button className="start-session-btn" onClick={() => navigate(`/my-workouts/${id}/session`)}>
         Start New Session
       </button>
 
-      {/* Modal pour graphique détaillé */}
       {selectedExercise && exerciseChartData && (
         <div className="modal-overlay" onClick={() => setSelectedExercise(null)}>
-          <div className="modal-content chart-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => setSelectedExercise(null)}>
+          <div className="modal-content" style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+            <button
+              className="modal-close-btn"
+              onClick={() => setSelectedExercise(null)}
+              style={{ position: 'absolute', top: 12, right: 16 }}
+            >
               ×
             </button>
-            <h3>{selectedExercise} Progression</h3>
+            <h3 className="modal-title">{selectedExercise} Progression</h3>
             <div style={{ height: '300px', marginTop: '1rem' }}>
               <Bar data={exerciseChartData} options={exerciseChartOptions} />
             </div>

@@ -14,6 +14,8 @@ export const SessionPage: React.FC = () => {
   const [toast, setToast] = useState<{ message: string; icon: string; type?: 'success' | 'error' } | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -23,7 +25,6 @@ export const SessionPage: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
-        // Prendre la dernière session (la plus récente) pour pré-remplir
         const lastSession = data.sessions?.[data.sessions.length - 1];
         initFromWorkout(data.exercises, lastSession);
         setLoaded(true);
@@ -34,6 +35,28 @@ export const SessionPage: React.FC = () => {
     if (id) load();
   }, [id, initFromWorkout]);
 
+  // Détecter si des données ont été saisies
+  useEffect(() => {
+    const hasData = exercises.some(ex => ex.sets.some((s: any) => s.weight > 0 || s.reps > 0));
+    setHasUnsavedChanges(hasData);
+  }, [exercises]);
+
+  // Intercepter le bouton back du navigateur
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+
+    window.history.pushState(null, '', window.location.pathname);
+
+    const handlePopState = (e: PopStateEvent) => {
+      e.preventDefault();
+      window.history.pushState(null, '', window.location.pathname);
+      setShowExitModal(true);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [hasUnsavedChanges]);
+
   const handleSubmit = async () => {
     const hasData = exercises.some(ex => ex.sets.some(s => s.weight > 0 && s.reps > 0));
     if (!hasData) {
@@ -43,12 +66,26 @@ export const SessionPage: React.FC = () => {
 
     try {
       await submitSession();
+      setHasUnsavedChanges(false);
       setShowConfetti(true);
       setToast({ message: 'Session saved!', icon: '✅', type: 'success' });
       setTimeout(() => navigate(`/my-workouts/${id}`), 2000);
     } catch {
       setToast({ message: 'Failed to save session', icon: '❌', type: 'error' });
     }
+  };
+
+  const handleBackClick = () => {
+    if (hasUnsavedChanges) {
+      setShowExitModal(true);
+    } else {
+      navigate(`/my-workouts/${id}`);
+    }
+  };
+
+  const handleExit = () => {
+    setShowExitModal(false);
+    navigate(`/my-workouts/${id}`);
   };
 
   if (!loaded) {
@@ -64,34 +101,34 @@ export const SessionPage: React.FC = () => {
 
   return (
     <div className="session-page">
-        <button className="back-btn" onClick={() => navigate(`/my-workouts/${id}`)}>
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="15 18 9 12 15 6"></polyline>
-  </svg>
-  Back
-</button>
+      <button className="back-btn" onClick={handleBackClick}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Back
+      </button>
       <h1 className="session-title">Log Session</h1>
 
-      {exercises.map((ex, exIdx) => (
+      {exercises.map((ex: any, exIdx: number) => (
         <div key={ex.exerciseId} className="session-exercise">
           <h3 className="session-exercise-name">{ex.exerciseName}</h3>
           
           <div className="sets-container">
-{ex.sets.map((set, setIdx) => (
-  <SetRow
-    key={set.tempId}
-    tempId={set.tempId}
-    setNumber={set.setNumber}
-    weight={set.weight}
-    reps={set.reps}
-    isDropSet={set.isDropSet}
-    isMicroReps={set.isMicroReps}
-    notes={set.notes}
-    onUpdate={(field, value) => updateSet(exIdx, setIdx, field as any, value)}
-    onRemove={(tempId) => removeSet(exIdx, tempId)}
-    canRemove={ex.sets.length > 1}
-  />
-))}
+            {ex.sets.map((set: any, setIdx: number) => (
+              <SetRow
+                key={set.tempId}
+                tempId={set.tempId}
+                setNumber={set.setNumber}
+                weight={set.weight}
+                reps={set.reps}
+                isDropSet={set.isDropSet}
+                isMicroReps={set.isMicroReps}
+                notes={set.notes}
+                onUpdate={(field, value) => updateSet(exIdx, setIdx, field as any, value)}
+                onRemove={(tempId) => removeSet(exIdx, tempId)}
+                canRemove={ex.sets.length > 1}
+              />
+            ))}
           </div>
 
           <button className="add-set-btn" onClick={() => addSet(exIdx)}>+ Add Set</button>
@@ -109,6 +146,22 @@ export const SessionPage: React.FC = () => {
       <button className="finish-session-btn" onClick={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? 'Saving...' : 'Finish Workout'}
       </button>
+
+      {/* Exit Confirmation Modal */}
+      {showExitModal && (
+        <div className="modal-overlay" onClick={() => setShowExitModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3 className="modal-title">Unsaved Changes</h3>
+            <p style={{ color: '#a1a1aa', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+              You have unsaved data in this session. Are you sure you want to leave? Your progress will be lost.
+            </p>
+            <div className="modal-actions">
+              <button className="btn-cancel" onClick={() => setShowExitModal(false)}>Stay</button>
+              <button className="btn-save" style={{ background: '#ef4444' }} onClick={handleExit}>Leave</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast && <Toast message={toast.message} icon={toast.icon} type={toast.type} onClose={() => setToast(null)} />}
       {showConfetti && <Confetti onComplete={() => setShowConfetti(false)} />}
