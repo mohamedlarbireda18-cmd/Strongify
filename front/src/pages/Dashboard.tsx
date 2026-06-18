@@ -3,6 +3,7 @@ import { useDashboard } from '../hooks/useDashboard';
 import { StatsCards } from '../components/dashboard/StatsCards';
 import { ProgressChart } from '../components/dashboard/ProgressChart';
 import '../components/dashboard/Dashboard.css';
+import { Loader } from '../components/ui/Loader';
 
 const motivationalMessages = [
   { icon: '💪', text: 'Every rep brings you closer to your goals.' },
@@ -35,21 +36,7 @@ export const Dashboard: React.FC = () => {
     motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)]
   );
 
-  if (isLoading) {
-    return (
-      <div className="dashboard-page">
-        <div className="dashboard-header">
-          <div className="skeleton skeleton-header" />
-          <div className="skeleton skeleton-subtitle" />
-        </div>
-        <div className="stats-cards">
-          {[1, 2, 3].map(i => <div key={i} className="skeleton skeleton-card" />)}
-        </div>
-        <div className="skeleton skeleton-chart" />
-      </div>
-    );
-  }
-
+if (isLoading) return <Loader text="Loading dashboard..." />;
   if (error) {
     return (
       <div className="dashboard-error">

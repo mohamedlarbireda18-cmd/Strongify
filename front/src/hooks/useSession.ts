@@ -33,13 +33,13 @@ export const useSession = (workoutId: string) => {
         ? lastEx.sets.map((s: any) => ({
             tempId: generateId(),
             setNumber: s.setNumber,
-            weight: 0,
-            reps: 0,
+            weight: s.weight || 0,
+            reps: s.reps || 0,
             isDropSet: s.isDropSet || false,
             isMicroReps: s.isMicroReps || false,
-            notes: ''
+            notes: s.notes || ''
           }))
-        : [{ 
+        : [{
             tempId: generateId(),
             setNumber: 1,
             weight: 0,
@@ -53,7 +53,7 @@ export const useSession = (workoutId: string) => {
         exerciseId: we.exerciseId,
         exerciseName: we.exercise.name,
         sets,
-        notes: ''
+        notes: lastEx?.notes || ''
       };
     });
     setExercises(exs);
@@ -73,7 +73,6 @@ export const useSession = (workoutId: string) => {
     setExercises(prev => {
       const updated = [...prev];
       const sets = [...updated[exerciseIdx].sets];
-      // Plus de blocage : on peut toujours ajouter un set
       sets.push({
         tempId: generateId(),
         setNumber: sets.length + 1,

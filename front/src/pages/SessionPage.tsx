@@ -8,7 +8,7 @@ import { API_URL } from '../lib/api';
 import '../components/workout/Workout.css';
 
 export const SessionPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, sessionId } = useParams<{ id: string; sessionId?: string }>();
   const navigate = useNavigate();
   const { exercises, initFromWorkout, updateSet, addSet, removeSet, updateNotes, submitSession, isSubmitting } = useSession(id!);
   const [toast, setToast] = useState<{ message: string; icon: string; type?: 'success' | 'error' } | null>(null);
@@ -16,6 +16,8 @@ export const SessionPage: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  const isEditMode = !!sessionId;
 
   useEffect(() => {
     const load = async () => {
@@ -25,50 +27,79 @@ export const SessionPage: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
-        const lastSession = data.sessions?.[data.sessions.length - 1];
-        initFromWorkout(data.exercises, lastSession);
+
+        if (isEditMode && sessionId) {
+          const session = data.sessions?.find((s: any) => s.id === sessionId);
+          if (session) {
+            initFromWorkout(data.exercises, session);
+          }
+        } else {
+          const lastSession = data.sessions?.[data.sessions.length - 1];
+          initFromWorkout(data.exercises, lastSession);
+        }
         setLoaded(true);
       } catch (err) {
         setToast({ message: 'Failed to load workout', icon: '❌', type: 'error' });
       }
     };
     if (id) load();
-  }, [id, initFromWorkout]);
+  }, [id, isEditMode, sessionId, initFromWorkout]);
 
-  // Détecter si des données ont été saisies
   useEffect(() => {
-    const hasData = exercises.some(ex => ex.sets.some((s: any) => s.weight > 0 || s.reps > 0));
+    const hasData = exercises.some((ex: any) => ex.sets.some((s: any) => s.weight > 0 || s.reps > 0));
     setHasUnsavedChanges(hasData);
   }, [exercises]);
 
-  // Intercepter le bouton back du navigateur
   useEffect(() => {
     if (!hasUnsavedChanges) return;
-
     window.history.pushState(null, '', window.location.pathname);
-
     const handlePopState = (e: PopStateEvent) => {
       e.preventDefault();
       window.history.pushState(null, '', window.location.pathname);
       setShowExitModal(true);
     };
-
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [hasUnsavedChanges]);
 
   const handleSubmit = async () => {
-    const hasData = exercises.some(ex => ex.sets.some(s => s.weight > 0 && s.reps > 0));
+    const hasData = exercises.some((ex: any) => ex.sets.some((s: any) => s.weight > 0 && s.reps > 0));
     if (!hasData) {
       setToast({ message: 'Fill at least one set with weight and reps', icon: '⚠️', type: 'error' });
       return;
     }
 
     try {
-      await submitSession();
+      if (isEditMode && sessionId) {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/api/workouts/session/${sessionId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            exercises: exercises.map((ex: any) => ({
+              exerciseId: ex.exerciseId,
+              notes: ex.notes,
+              sets: ex.sets.map((s: any) => ({
+                weight: s.weight,
+                reps: s.reps,
+                isDropSet: s.isDropSet,
+                isMicroReps: s.isMicroReps,
+                notes: s.notes
+              }))
+            }))
+          })
+        });
+        if (!res.ok) throw new Error('Failed to update session');
+        setToast({ message: 'Session updated!', icon: '✅', type: 'success' });
+      } else {
+        await submitSession();
+        setToast({ message: 'Session saved!', icon: '✅', type: 'success' });
+      }
       setHasUnsavedChanges(false);
       setShowConfetti(true);
-      setToast({ message: 'Session saved!', icon: '✅', type: 'success' });
       setTimeout(() => navigate(`/my-workouts/${id}`), 2000);
     } catch {
       setToast({ message: 'Failed to save session', icon: '❌', type: 'error' });
@@ -83,15 +114,10 @@ export const SessionPage: React.FC = () => {
     }
   };
 
-  const handleExit = () => {
-    setShowExitModal(false);
-    navigate(`/my-workouts/${id}`);
-  };
-
   if (!loaded) {
     return (
       <div className="session-page">
-        <div className="skeleton skeleton-header" style={{ height: 32, marginBottom: 16 }} />
+        <div className="skeleton" style={{ height: 32, marginBottom: 16 }} />
         {[1, 2, 3].map(i => (
           <div key={i} className="skeleton" style={{ height: 120, marginBottom: 12, borderRadius: 14 }} />
         ))}
@@ -107,12 +133,11 @@ export const SessionPage: React.FC = () => {
         </svg>
         Back
       </button>
-      <h1 className="session-title">Log Session</h1>
+      <h1 className="session-title">{isEditMode ? 'Edit Session' : 'Log Session'}</h1>
 
       {exercises.map((ex: any, exIdx: number) => (
         <div key={ex.exerciseId} className="session-exercise">
           <h3 className="session-exercise-name">{ex.exerciseName}</h3>
-          
           <div className="sets-container">
             {ex.sets.map((set: any, setIdx: number) => (
               <SetRow
@@ -130,24 +155,15 @@ export const SessionPage: React.FC = () => {
               />
             ))}
           </div>
-
           <button className="add-set-btn" onClick={() => addSet(exIdx)}>+ Add Set</button>
-
-          <input
-            type="text"
-            className="exercise-notes"
-            placeholder="Notes for this exercise..."
-            value={ex.notes}
-            onChange={e => updateNotes(exIdx, e.target.value)}
-          />
+          <input type="text" className="exercise-notes" placeholder="Notes for this exercise..." value={ex.notes} onChange={e => updateNotes(exIdx, e.target.value)} />
         </div>
       ))}
 
       <button className="finish-session-btn" onClick={handleSubmit} disabled={isSubmitting}>
-        {isSubmitting ? 'Saving...' : 'Finish Workout'}
+        {isSubmitting ? 'Saving...' : isEditMode ? 'Update Session' : 'Finish Workout'}
       </button>
 
-      {/* Exit Confirmation Modal */}
       {showExitModal && (
         <div className="modal-overlay" onClick={() => setShowExitModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -157,7 +173,7 @@ export const SessionPage: React.FC = () => {
             </p>
             <div className="modal-actions">
               <button className="btn-cancel" onClick={() => setShowExitModal(false)}>Stay</button>
-              <button className="btn-save" style={{ background: '#ef4444' }} onClick={handleExit}>Leave</button>
+              <button className="btn-save" style={{ background: '#ef4444' }} onClick={() => { setShowExitModal(false); navigate(`/my-workouts/${id}`); }}>Leave</button>
             </div>
           </div>
         </div>

@@ -255,9 +255,23 @@ export const WorkoutDetail: React.FC = () => {
       <div className="workout-detail-section">
         <h3>Sessions ({workout.sessions.length})</h3>
         {displayedSessions.map((s) => (
-          <div key={s.id} className="detail-session-item" onClick={() => navigate(`/my-workouts/${id}/session/${s.id}`)}>
-            <span>{new Date(s.date).toLocaleDateString()}</span>
-            <span className="detail-session-volume">{s.totalVolume} kg</span>
+          <div key={s.id} className="detail-session-item">
+            <span onClick={() => navigate(`/my-workouts/${id}/session/${s.id}`)}>
+              {new Date(s.date).toLocaleDateString()}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span className="detail-session-volume">{s.totalVolume} kg</span>
+              <button
+                className="session-edit-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/my-workouts/${id}/session/${s.id}/edit`);
+                }}
+                title="Edit session"
+              >
+                ✏️
+              </button>
+            </div>
           </div>
         ))}
         {hasMoreSessions && (

@@ -44,30 +44,68 @@ async getStats(userId: string, period?: string) {
     return Object.values(progressByType);
   }
 
-  private async calculateStreak(userId: string): Promise<number> {
-  const sessions = await prisma.workoutSession.findMany({
-    where: { userId },
-    select: { date: true },
-    orderBy: { date: 'desc' }
+private async calculateStreak(userId: string): Promise<number> {
+  // Récupérer toutes les dates d'activité (workout sessions + calorie logs + weight logs)
+  const [workoutSessions, calorieLogs, weightLogs] = await Promise.all([
+    prisma.workoutSession.findMany({
+      where: { userId },
+      select: { date: true },
+      orderBy: { date: 'desc' }
+    }),
+    prisma.calorieLog.findMany({
+      where: { userId },
+      select: { date: true },
+      orderBy: { date: 'desc' }
+    }),
+    prisma.weightLog.findMany({
+      where: { userId },
+      select: { date: true },
+      orderBy: { date: 'desc' }
+    })
+  ]);
+
+  // Fusionner toutes les dates et les normaliser à minuit
+  const allDates = [
+    ...workoutSessions.map(s => s.date),
+    ...calorieLogs.map(l => l.date),
+    ...weightLogs.map(l => l.date)
+  ].map(d => {
+    const normalized = new Date(d);
+    normalized.setHours(0, 0, 0, 0);
+    return normalized.getTime();
   });
 
-  if (!sessions.length) return 0;
+  // Dédupliquer les dates
+  const uniqueDates = [...new Set(allDates)].sort((a, b) => b - a);
 
+  if (uniqueDates.length === 0) return 0;
+
+  // Calculer le streak
   let streak = 1;
-  let cur = new Date(sessions[0].date);
-  cur.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayTime = today.getTime();
 
-  for (let i = 1; i < sessions.length; i++) {
-    const d = new Date(sessions[i].date);
-    d.setHours(0, 0, 0, 0);
-    const diff = (cur.getTime() - d.getTime()) / 86400000;
+  // Vérifier si l'utilisateur a été actif aujourd'hui ou hier
+  const lastActiveDate = uniqueDates[0];
+  const oneDay = 86400000; // 24h en ms
+
+  // Si la dernière activité date de plus d'un jour, le streak est rompu
+  if (todayTime - lastActiveDate > oneDay) return 0;
+
+  let currentDate = lastActiveDate;
+
+  for (let i = 1; i < uniqueDates.length; i++) {
+    const previousDate = uniqueDates[i];
+    const diff = (currentDate - previousDate) / oneDay;
 
     if (diff === 1) {
       streak++;
-      cur = d;
+      currentDate = previousDate;
     } else if (diff > 1) {
       break;
     }
+    // Si diff === 0 (même jour), on continue sans incrémenter
   }
 
   return streak;

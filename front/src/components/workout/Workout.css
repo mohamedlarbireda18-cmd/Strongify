@@ -971,7 +971,20 @@
   border-radius: 2px;
   opacity: 0.9;
 }
+.session-edit-btn {
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 6px;
+  color: #a78bfa;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  transition: all 0.2s;
+}
 
+.session-edit-btn:hover {
+  background: rgba(124, 58, 237, 0.2);
+}
 /* ============================================
    KEYFRAMES
    ============================================ */

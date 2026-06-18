@@ -841,6 +841,54 @@
 .deficit-card .info-tooltip {
   margin-left: 4px;
 }
+
+/* Calorie History */
+.calorie-history-container {
+  background: #1a1a1e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1rem;
+  margin: 0.75rem 0;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: cardSlideUp 0.4s ease 0.45s forwards;
+}
+
+.light-mode .calorie-history-container {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.calorie-history-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.813rem;
+  color: #a1a1aa;
+}
+
+.calorie-history-value {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+.view-more-btn {
+  width: 100%;
+  padding: 0.5rem;
+  background: transparent;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 8px;
+  color: #a78bfa;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+}
+
+.view-more-btn:hover {
+  background: rgba(124, 58, 237, 0.1);
+}
 /* ============================================
    KEYFRAMES
    ============================================ */

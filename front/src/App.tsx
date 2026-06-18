@@ -11,7 +11,7 @@ import { SessionPage } from './pages/SessionPage';
 import { BodyTracker } from './pages/BodyTracker';
 import { Profile } from './pages/Profile';
 import { SessionDetailPage } from './pages/SessionDetail';
-// Protection des routes
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('token');
   if (!token) return <Navigate to="/login" replace />;
@@ -22,30 +22,22 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Routes publiques */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signin" element={<SignInForm />} />
 
-        {/* Routes protégées */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <AppLayout />
-            </ProtectedRoute>
-          }
-        >
+        <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/exercises" element={<Exercises />} />
           <Route path="/my-workouts" element={<MyWorkouts />} />
           <Route path="/my-workouts/:id" element={<WorkoutDetail />} />
           <Route path="/my-workouts/:id/session" element={<SessionPage />} />
+          <Route path="/my-workouts/:id/session/:sessionId/edit" element={<SessionPage />} />
           <Route path="/body" element={<BodyTracker />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/my-workouts/:workoutId/session/:sessionId" element={<SessionDetailPage />} />
         </Route>
 
-        {/* 404 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
