@@ -113,16 +113,8 @@ export const Navbar: React.FC<NavbarProps> = ({ theme, onThemeToggle }) => {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="navbar-container">
           <div className="navbar-logo" onClick={() => scrollToSection('home')}>
-            <div className="navbar-logo-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 6h12v12H6z"/>
-                <path d="M9 3v3"/>
-                <path d="M15 3v3"/>
-                <path d="M9 18v3"/>
-                <path d="M15 18v3"/>
-                <path d="M12 6v12"/>
-              </svg>
-            </div>
+           
+<div className="navbar-logo-icon">💪</div>
             <span className="navbar-logo-text">STRONGIFY</span>
           </div>
 

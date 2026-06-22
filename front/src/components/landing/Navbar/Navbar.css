@@ -399,7 +399,10 @@
   transform: rotate(-45deg) translate(5px, -5px);
   width: 22px;
 }
-
+.navbar-logo-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
 /* ============================================
    RESPONSIVE - TABLETTE
    ============================================ */

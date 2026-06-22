@@ -116,9 +116,7 @@ export const SignInForm: React.FC = () => {
         <div className="auth-container">
           <div className="auth-logo">
             <div className="auth-logo-icon" onClick={() => navigate('/')} title="Go to homepage">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 6h12v12H6z"/><path d="M9 3v3"/><path d="M15 3v3"/><path d="M9 18v3"/><path d="M15 18v3"/><path d="M12 6v12"/>
-              </svg>
+              💪
             </div>
             <h1 className="auth-title">Create Account</h1>
             <p className="auth-subtitle">Start your fitness journey today</p>
@@ -133,7 +131,6 @@ export const SignInForm: React.FC = () => {
             )}
 
             <form className="auth-form" onSubmit={handleSubmit}>
-              {/* Full Name */}
               <div className="form-group">
                 <label className="form-label" htmlFor="name">
                   <span className="form-label-icon">👤</span> Full Name
@@ -151,7 +148,6 @@ export const SignInForm: React.FC = () => {
                 />
               </div>
 
-              {/* Email */}
               <div className="form-group">
                 <label className="form-label" htmlFor="email">
                   <span className="form-label-icon">📧</span> Email
@@ -168,7 +164,6 @@ export const SignInForm: React.FC = () => {
                 />
               </div>
 
-              {/* Password */}
               <div className="form-group">
                 <label className="form-label" htmlFor="password">
                   <span className="form-label-icon">🔒</span> Password
@@ -209,7 +204,6 @@ export const SignInForm: React.FC = () => {
                 )}
               </div>
 
-              {/* Confirm Password */}
               <div className="form-group">
                 <label className="form-label" htmlFor="confirmPassword">
                   <span className="form-label-icon">🔒</span> Confirm Password
@@ -242,7 +236,6 @@ export const SignInForm: React.FC = () => {
                 )}
               </div>
 
-              {/* Terms */}
               <div className="checkbox-group">
                 <input
                   type="checkbox"
