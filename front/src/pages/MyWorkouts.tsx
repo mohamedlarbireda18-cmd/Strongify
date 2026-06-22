@@ -1,37 +1,43 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useWorkouts } from '../hooks/useWorkouts';
 import { WorkoutCard } from '../components/workout/WorkoutCard';
-import { Toast } from '../components/ui/Toast';
 import '../components/workout/Workout.css';
 
 export const MyWorkouts: React.FC = () => {
-  const { workouts, isLoading, error, deleteWorkout } = useWorkouts();
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ message: string; icon: string; type?: 'success' | 'error' } | null>(null);
+  const { workouts, isLoading, error } = useWorkouts();
 
-  const handleDelete = (id: string) => {
-    setDeleteConfirm(id);
-  };
+  if (isLoading) {
+    return (
+      <div className="workouts-page">
+        {/* Skeleton titre */}
+        <div className="skeleton" style={{ height: 28, width: '50%', marginBottom: 8 }} />
+        <div className="skeleton" style={{ height: 16, width: '30%', marginBottom: 24 }} />
 
-  const confirmDelete = async () => {
-    if (!deleteWorkout || !deleteConfirm) return;
-    try {
-      await deleteWorkout(deleteConfirm);
-      setToast({ message: 'Workout deleted', icon: '🗑️', type: 'error' });
-    } catch {
-      setToast({ message: 'Failed to delete', icon: '❌', type: 'error' });
-    } finally {
-      setDeleteConfirm(null);
-    }
-  };
+        {/* Skeleton cartes */}
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="skeleton" style={{
+            height: 100,
+            borderRadius: 14,
+            marginBottom: 12
+          }} />
+        ))}
+      </div>
+    );
+  }
 
-  if (isLoading) return <div className="workouts-page">Loading...</div>;
-  if (error) return <div className="workouts-page">⚠️ {error}</div>;
+  if (error) {
+    return (
+      <div className="workouts-page">
+        <p style={{ color: '#ef4444' }}>⚠️ {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="workouts-page">
       <h1 className="workouts-title">My Workouts</h1>
       <p className="workouts-subtitle">{workouts.length} workout{workouts.length !== 1 ? 's' : ''}</p>
+
       {workouts.map(w => (
         <WorkoutCard
           key={w.id}
@@ -39,31 +45,21 @@ export const MyWorkouts: React.FC = () => {
           name={w.name}
           type={w.type}
           sessionsCount={w.sessions?.length || 0}
-          volumes={w.sessions?.map(s => s.totalVolume) || []}
-          onDelete={handleDelete}
+          volumes={w.sessions?.map((s: any) => s.totalVolume) || []}
         />
       ))}
-      {workouts.length === 0 && (
-        <p className="text-muted">No workouts yet. Create one from the Exercise Library.</p>
-      )}
 
-      {/* Modale de confirmation */}
-      {deleteConfirm && (
-        <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3 className="modal-title">Delete Workout</h3>
-            <p style={{ color: '#a1a1aa', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-              Are you sure you want to delete this workout? All sessions will be lost.
-            </p>
-            <div className="modal-actions">
-              <button className="btn-cancel" onClick={() => setDeleteConfirm(null)}>Cancel</button>
-              <button className="btn-save" style={{ background: '#ef4444' }} onClick={confirmDelete}>Delete</button>
-            </div>
-          </div>
+      {workouts.length === 0 && (
+        <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+          <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏋️</p>
+          <p style={{ color: '#71717a', fontSize: '0.938rem', marginBottom: '0.5rem' }}>
+            No workouts yet
+          </p>
+          <p style={{ color: '#52525b', fontSize: '0.813rem' }}>
+            Create one from the Exercise Library
+          </p>
         </div>
       )}
-
-      {toast && <Toast message={toast.message} icon={toast.icon} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 };
