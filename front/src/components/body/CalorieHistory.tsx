@@ -14,6 +14,7 @@ interface CalorieLog {
 interface Props {
   logs: CalorieLog[];
   targetCalories: number;
+  maintenance: number; // ajouté : calories de maintenance (TDEE)
 }
 
 const INITIAL_VISIBLE_LOGS = 5;
@@ -21,7 +22,7 @@ const LOGS_PER_CLICK = 5;
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export const CalorieHistory: React.FC<Props> = ({ logs, targetCalories }) => {
+export const CalorieHistory: React.FC<Props> = ({ logs, targetCalories, maintenance }) => {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [visibleLogs, setVisibleLogs] = useState<number>(INITIAL_VISIBLE_LOGS);
 
@@ -98,11 +99,11 @@ export const CalorieHistory: React.FC<Props> = ({ logs, targetCalories }) => {
     }
   };
 
-  // Résumé de la semaine
+  // Résumé de la semaine — corrigé
   const totalWeekCalories = dailyCalories.reduce((sum, val) => sum + val, 0);
-  const totalWeekTarget = targetCalories * 7;
-  const weekSurplus = totalWeekCalories - totalWeekTarget;
-  const estimatedWeightChange = weekSurplus / 7700; // en kg
+  const totalMaintenance = maintenance * 7; // maintenance × 7 jours
+  const weekBalance = totalWeekCalories - totalMaintenance; // négatif = déficit, positif = surplus
+  const estimatedWeightChange = weekBalance / 7700; // en kg (1 kg ≈ 7700 kcal)
 
   // Logs triés par date décroissante pour la liste
   const sortedWeekLogs = useMemo(() => {
@@ -122,7 +123,6 @@ export const CalorieHistory: React.FC<Props> = ({ logs, targetCalories }) => {
         <InfoTooltip title="Week starts on Sunday" content="Select any day to view its week (Sunday to Saturday)." />
       </div>
 
-      {/* Sélecteur de date et affichage de la semaine */}
       <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
         <div>
           <label style={{ fontSize: '0.688rem', color: '#71717a', marginRight: '0.5rem' }}>Date:</label>
@@ -147,7 +147,6 @@ export const CalorieHistory: React.FC<Props> = ({ logs, targetCalories }) => {
         </div>
       </div>
 
-      {/* Graphique */}
       <div style={{ height: '200px' }}>
         {weekLogs.length > 0 ? (
           <Bar data={chartData} options={chartOptions} />
@@ -156,31 +155,30 @@ export const CalorieHistory: React.FC<Props> = ({ logs, targetCalories }) => {
         )}
       </div>
 
-      {/* Résumé hebdomadaire */}
+      {/* Résumé hebdomadaire — corrigé */}
       <div className="weekly-summary">
         <div className="summary-row">
           <span>Total consumed</span>
           <span className="summary-value">{totalWeekCalories} kcal</span>
         </div>
         <div className="summary-row">
-          <span>Weekly target</span>
-          <span className="summary-value">{totalWeekTarget} kcal</span>
+          <span>Maintenance calories</span>
+          <span className="summary-value">{totalMaintenance} kcal</span>
         </div>
         <div className="summary-row">
-          <span>{weekSurplus >= 0 ? 'Surplus' : 'Deficit'}</span>
-          <span className="summary-value" style={{ color: weekSurplus >= 0 ? '#ef4444' : '#22c55e' }}>
-            {weekSurplus >= 0 ? '+' : ''}{weekSurplus} kcal
+          <span>{weekBalance >= 0 ? 'Surplus' : 'Deficit'}</span>
+          <span className="summary-value" style={{ color: weekBalance >= 0 ? '#ef4444' : '#22c55e' }}>
+            {weekBalance >= 0 ? '+' : ''}{weekBalance} kcal
           </span>
         </div>
         <div className="summary-row">
-          <span>Estimated weight {weekSurplus >= 0 ? 'gain' : 'loss'}</span>
-          <span className="summary-value" style={{ color: weekSurplus >= 0 ? '#ef4444' : '#22c55e' }}>
+          <span>Est. weight {weekBalance >= 0 ? 'gain' : 'loss'}</span>
+          <span className="summary-value" style={{ color: weekBalance >= 0 ? '#ef4444' : '#22c55e' }}>
             {estimatedWeightChange >= 0 ? '+' : ''}{estimatedWeightChange.toFixed(2)} kg
           </span>
         </div>
       </div>
 
-      {/* Liste des logs avec View More / View Less */}
       <div style={{ marginTop: '1rem' }}>
         {displayedLogs.map((l, i) => (
           <div key={l.id || i} className="calorie-history-item">

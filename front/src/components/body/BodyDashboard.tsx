@@ -85,7 +85,8 @@ export const BodyDashboard: React.FC<Props> = ({ body, onEditPlan }) => {
     {isBulk&&surplusFromTDEE<0&&<div className="disclaimer-card deficit">⚠️ You are eating below maintenance! This will limit muscle growth.</div>}
 
     {/* Calorie History avec calendrier */}
-    {allCalorieLogs && allCalorieLogs.length > 0 && <CalorieHistory logs={allCalorieLogs} targetCalories={targetCalories||0}/>}
+    {allCalorieLogs && allCalorieLogs.length > 0 && 
+    <CalorieHistory logs={allCalorieLogs} targetCalories={targetCalories||0} maintenance={maintenance}/>}
 
     <div className="goal-card"><h3 className="section-title" style={{marginTop:0}}>Current Goal</h3><div className="goal-card-row"><span>Goal</span><span>{userGoals?goalLabels[userGoals.goal]:'--'}</span></div><div className="goal-card-row"><span>Activity</span><span>{userGoals?activityLabels[userGoals.activity]:'--'}</span></div><div className="goal-card-row"><span>Maintenance</span><span>{tdee||maintenance||0} kcal</span></div><div className="goal-card-row"><span>Target</span><span>{targetCalories||0} kcal</span></div><div className="goal-card-row"><span>Estimated</span><span>{weeklyProjection} kg/week</span></div><p style={{fontSize:'0.813rem',color:'#a78bfa',marginTop:'0.75rem',lineHeight:1.5}}>{userGoals?goalMessages[userGoals.goal]:''}</p><button className="btn-reset-plan" onClick={()=>setShowResetModal(true)}>🗑️ Reset Plan</button></div>
 
